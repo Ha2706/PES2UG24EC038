@@ -29,11 +29,11 @@ module decoder (
 
             // R-type
             7'b0110011: begin
-                rd      = instruction[11:7];
-                fn3     = instruction[14:12];
-                rs1     = instruction[19:15];
-                rs2     = instruction[24:20];
-                fn7_5   = instruction[30];
+                rd    = instruction[11:7];
+                fn3   = instruction[14:12];
+                rs1   = instruction[19:15];
+                rs2   = instruction[24:20];
+                fn7_5 = instruction[30];
             end
 
             // I-type ALU
@@ -43,12 +43,6 @@ module decoder (
                 rs1     = instruction[19:15];
                 imm     = instruction[31:20];
                 imm11_5 = instruction[31:25];
-
-                // Shift instructions use a zero-extended shamt
-                if (instruction[14:12] == 3'b001 ||
-                    instruction[14:12] == 3'b101) begin
-                    imm = {7'b0, instruction[24:20]};
-                end
             end
 
             // Load
@@ -64,7 +58,8 @@ module decoder (
                 fn3 = instruction[14:12];
                 rs1 = instruction[19:15];
                 rs2 = instruction[24:20];
-                imm = {instruction[31:25], instruction[11:7]};
+                imm = {instruction[31:25],
+                       instruction[11:7]};
             end
 
             // Branch
@@ -72,24 +67,19 @@ module decoder (
                 fn3 = instruction[14:12];
                 rs1 = instruction[19:15];
                 rs2 = instruction[24:20];
-                imm = {
-                    instruction[31],
-                    instruction[7],
-                    instruction[30:25],
-                    instruction[11:8],
-                    1'b0
-                };
+                imm = {instruction[31],
+                       instruction[7],
+                       instruction[30:25],
+                       instruction[11:8]};
             end
 
             // JAL
             7'b1101111: begin
-                rd     = instruction[11:7];
-                imm_uj = {
-                    instruction[31],
-                    instruction[19:12],
-                    instruction[20],
-                    instruction[30:21]
-                };
+                rd = instruction[11:7];
+                imm_uj = {instruction[31],
+                          instruction[19:12],
+                          instruction[20],
+                          instruction[30:21]};
             end
 
             // JALR
@@ -112,7 +102,8 @@ module decoder (
                 imm_uj = instruction[31:12];
             end
 
-            // Unsupported instructions retain default values
+            // Unsupported opcode:
+            // all outputs except opcode remain zero
             default: begin
             end
 
